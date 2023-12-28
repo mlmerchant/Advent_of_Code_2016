@@ -2007,18 +2007,19 @@ EOF
 typeset -a challenge
 index=0
 while read -r line; do
-    line=$(echo $line | sed 's/\[*\]/Z/g')
+    line=$(echo $line | sed 's/\[.*\]/Z/g')
     for char in {a..z}; do
-        line=$(echo $line | sed 's/$char$char/BB/g')
+        line=$(echo $line | sed "s/$char$char/BB/g")
     done 
     for char in {a..z}; do
-        line=$(echo $line | sed 's/$charBB$char/ABBA/g')
+        line=$(echo $line | sed "s/${char}BB${char}/ABBA/g")
     done 
     challenge[$index]=$line
     ((index++))
 done < chal
 
-{for line in ${challenge[@]}; do
-    echo line | grep 'ABBA'
-done } > wc -l
+for line in ${challenge[@]}; do
+    echo $line | grep 'ABBA'
+done | wc -l
+
 
