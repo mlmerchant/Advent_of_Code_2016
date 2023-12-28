@@ -2004,22 +2004,39 @@ nbndomwcaauiluzbg[qjxqxhccqsvtkwm]oazwbouchccdhtrbnbv[vetwfilwgnxxxrhxar]mrbcnwl
 xuabbxdwkutpsogcfea[tgetfqpgstsxrokcemk]cbftstsldgcqbxf[vwjejomptmifhdulc]ejeroshnazbwjjzofbe
 EOF
 
-typeset -a challenge
-index=0
-while read -r line; do
-    line=$(echo $line | sed 's/\[.*\]/Z/g')
-    for char in {a..z}; do
-        line=$(echo $line | sed "s/$char$char/BB/g")
-    done 
-    for char in {a..z}; do
-        line=$(echo $line | sed "s/${char}BB${char}/ABBA/g")
-    done 
-    challenge[$index]=$line
-    ((index++))
-done < chal
+## xx to BB
+sed_expression=""
+# Generate sed expressions for each pair from aa to zz
+for letter in {a..z}; do
+    if [ -z "$sed_expression" ]; then
+        # First iteration
+        sed_expression="s/${letter}${letter}/BB/g"
+    else
+        # Append to the existing expression
+        sed_expression+="; s/${letter}${letter}/BB/g"
+    fi
+done
+# Apply the sed expressions to the file
+cat chal | sed "$sed_expression" > chal1
 
-for line in ${challenge[@]}; do
-    echo $line | grep 'ABBA'
-done | wc -l
+### xBBx to ABBA
+sed_expression=""
+# Generate sed expressions for each pair from aBBa to zBBz
+for letter in {a..z}; do
+    if [ -z "$sed_expression" ]; then
+        # First iteration
+        sed_expression="s/${letter}BB${letter}/BB/g"
+    else
+        # Append to the existing expression
+        sed_expression+="; s/${letter}BB${letter}/ABBA/g"
+    fi
+done
+# Apply the sed expressions to the file
+cat chal1 | sed "$sed_expression" > chal2
 
+
+# Remove invalid lines & count remaining with ABBA.
+cat chal2 | sed 's/\[[a-z]*ABBA[a-z]*\]/INVALID/g' | grep -v 'INVALID' | grep "ABBA" | wc -l
+
+# 116 is not correct.  I think I'm running into an issue where replacements are smothering other matches.
 
