@@ -164,7 +164,7 @@ function rotate_row() {
     local y=$1
     local temp=${grid["49.$y"]}
     local x
-    for ((x=49; x > 0; x++)); do
+    for ((x=49; x > 0; x--)); do
         grid["$x.$y"]=${grid["$((x - 1)).$y"]}
     done 
     grid["0.$y"]=$temp
@@ -222,4 +222,4 @@ done
 
 
 echo $total
-# not 79 or 52
+# The answer is 110
